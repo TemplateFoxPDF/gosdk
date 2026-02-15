@@ -34,13 +34,13 @@ func Test_templatefox_PDFAsyncAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test PDFAsyncAPIService GetPdfJobStatus", func(t *testing.T) {
+	t.Run("Test PDFAsyncAPIService GetPdfJob", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
 		var jobId string
 
-		resp, httpRes, err := apiClient.PDFAsyncAPI.GetPdfJobStatus(context.Background(), jobId).Execute()
+		resp, httpRes, err := apiClient.PDFAsyncAPI.GetPdfJob(context.Background(), jobId).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
