@@ -16,69 +16,70 @@ import (
 	"fmt"
 )
 
-// checks if the TransactionsResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TransactionsResponse{}
+// checks if the JobListResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &JobListResponse{}
 
-// TransactionsResponse Response for transactions list endpoint
-type TransactionsResponse struct {
-	Transactions []Transaction `json:"transactions"`
-	// Total number of transactions
+// JobListResponse Response for job list query
+type JobListResponse struct {
+	// List of jobs
+	Jobs []JobStatusResponse `json:"jobs"`
+	// Total number of jobs matching filter
 	Total int32 `json:"total"`
-	// Number of records returned
+	// Page size
 	Limit int32 `json:"limit"`
-	// Number of records skipped
+	// Page offset
 	Offset int32 `json:"offset"`
 }
 
-type _TransactionsResponse TransactionsResponse
+type _JobListResponse JobListResponse
 
-// NewTransactionsResponse instantiates a new TransactionsResponse object
+// NewJobListResponse instantiates a new JobListResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTransactionsResponse(transactions []Transaction, total int32, limit int32, offset int32) *TransactionsResponse {
-	this := TransactionsResponse{}
-	this.Transactions = transactions
+func NewJobListResponse(jobs []JobStatusResponse, total int32, limit int32, offset int32) *JobListResponse {
+	this := JobListResponse{}
+	this.Jobs = jobs
 	this.Total = total
 	this.Limit = limit
 	this.Offset = offset
 	return &this
 }
 
-// NewTransactionsResponseWithDefaults instantiates a new TransactionsResponse object
+// NewJobListResponseWithDefaults instantiates a new JobListResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTransactionsResponseWithDefaults() *TransactionsResponse {
-	this := TransactionsResponse{}
+func NewJobListResponseWithDefaults() *JobListResponse {
+	this := JobListResponse{}
 	return &this
 }
 
-// GetTransactions returns the Transactions field value
-func (o *TransactionsResponse) GetTransactions() []Transaction {
+// GetJobs returns the Jobs field value
+func (o *JobListResponse) GetJobs() []JobStatusResponse {
 	if o == nil {
-		var ret []Transaction
+		var ret []JobStatusResponse
 		return ret
 	}
 
-	return o.Transactions
+	return o.Jobs
 }
 
-// GetTransactionsOk returns a tuple with the Transactions field value
+// GetJobsOk returns a tuple with the Jobs field value
 // and a boolean to check if the value has been set.
-func (o *TransactionsResponse) GetTransactionsOk() ([]Transaction, bool) {
+func (o *JobListResponse) GetJobsOk() ([]JobStatusResponse, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return o.Transactions, true
+	return o.Jobs, true
 }
 
-// SetTransactions sets field value
-func (o *TransactionsResponse) SetTransactions(v []Transaction) {
-	o.Transactions = v
+// SetJobs sets field value
+func (o *JobListResponse) SetJobs(v []JobStatusResponse) {
+	o.Jobs = v
 }
 
 // GetTotal returns the Total field value
-func (o *TransactionsResponse) GetTotal() int32 {
+func (o *JobListResponse) GetTotal() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -89,7 +90,7 @@ func (o *TransactionsResponse) GetTotal() int32 {
 
 // GetTotalOk returns a tuple with the Total field value
 // and a boolean to check if the value has been set.
-func (o *TransactionsResponse) GetTotalOk() (*int32, bool) {
+func (o *JobListResponse) GetTotalOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -97,12 +98,12 @@ func (o *TransactionsResponse) GetTotalOk() (*int32, bool) {
 }
 
 // SetTotal sets field value
-func (o *TransactionsResponse) SetTotal(v int32) {
+func (o *JobListResponse) SetTotal(v int32) {
 	o.Total = v
 }
 
 // GetLimit returns the Limit field value
-func (o *TransactionsResponse) GetLimit() int32 {
+func (o *JobListResponse) GetLimit() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -113,7 +114,7 @@ func (o *TransactionsResponse) GetLimit() int32 {
 
 // GetLimitOk returns a tuple with the Limit field value
 // and a boolean to check if the value has been set.
-func (o *TransactionsResponse) GetLimitOk() (*int32, bool) {
+func (o *JobListResponse) GetLimitOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -121,12 +122,12 @@ func (o *TransactionsResponse) GetLimitOk() (*int32, bool) {
 }
 
 // SetLimit sets field value
-func (o *TransactionsResponse) SetLimit(v int32) {
+func (o *JobListResponse) SetLimit(v int32) {
 	o.Limit = v
 }
 
 // GetOffset returns the Offset field value
-func (o *TransactionsResponse) GetOffset() int32 {
+func (o *JobListResponse) GetOffset() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -137,7 +138,7 @@ func (o *TransactionsResponse) GetOffset() int32 {
 
 // GetOffsetOk returns a tuple with the Offset field value
 // and a boolean to check if the value has been set.
-func (o *TransactionsResponse) GetOffsetOk() (*int32, bool) {
+func (o *JobListResponse) GetOffsetOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -145,11 +146,11 @@ func (o *TransactionsResponse) GetOffsetOk() (*int32, bool) {
 }
 
 // SetOffset sets field value
-func (o *TransactionsResponse) SetOffset(v int32) {
+func (o *JobListResponse) SetOffset(v int32) {
 	o.Offset = v
 }
 
-func (o TransactionsResponse) MarshalJSON() ([]byte, error) {
+func (o JobListResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -157,21 +158,21 @@ func (o TransactionsResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TransactionsResponse) ToMap() (map[string]interface{}, error) {
+func (o JobListResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["transactions"] = o.Transactions
+	toSerialize["jobs"] = o.Jobs
 	toSerialize["total"] = o.Total
 	toSerialize["limit"] = o.Limit
 	toSerialize["offset"] = o.Offset
 	return toSerialize, nil
 }
 
-func (o *TransactionsResponse) UnmarshalJSON(data []byte) (err error) {
+func (o *JobListResponse) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"transactions",
+		"jobs",
 		"total",
 		"limit",
 		"offset",
@@ -191,53 +192,53 @@ func (o *TransactionsResponse) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varTransactionsResponse := _TransactionsResponse{}
+	varJobListResponse := _JobListResponse{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTransactionsResponse)
+	err = decoder.Decode(&varJobListResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = TransactionsResponse(varTransactionsResponse)
+	*o = JobListResponse(varJobListResponse)
 
 	return err
 }
 
-type NullableTransactionsResponse struct {
-	value *TransactionsResponse
+type NullableJobListResponse struct {
+	value *JobListResponse
 	isSet bool
 }
 
-func (v NullableTransactionsResponse) Get() *TransactionsResponse {
+func (v NullableJobListResponse) Get() *JobListResponse {
 	return v.value
 }
 
-func (v *NullableTransactionsResponse) Set(val *TransactionsResponse) {
+func (v *NullableJobListResponse) Set(val *JobListResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTransactionsResponse) IsSet() bool {
+func (v NullableJobListResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTransactionsResponse) Unset() {
+func (v *NullableJobListResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTransactionsResponse(val *TransactionsResponse) *NullableTransactionsResponse {
-	return &NullableTransactionsResponse{value: val, isSet: true}
+func NewNullableJobListResponse(val *JobListResponse) *NullableJobListResponse {
+	return &NullableJobListResponse{value: val, isSet: true}
 }
 
-func (v NullableTransactionsResponse) MarshalJSON() ([]byte, error) {
+func (v NullableJobListResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTransactionsResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableJobListResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

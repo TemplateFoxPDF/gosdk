@@ -16,37 +16,39 @@ import (
 	"fmt"
 )
 
-// checks if the CreatePdfRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreatePdfRequest{}
+// checks if the CreateAsyncPdfRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateAsyncPdfRequest{}
 
-// CreatePdfRequest Request model for PDF generation
-type CreatePdfRequest struct {
+// CreateAsyncPdfRequest Request model for async PDF generation
+type CreateAsyncPdfRequest struct {
 	// **Required.** Template short ID (12 characters)
 	TemplateId string `json:"template_id"`
-	// **Required.** Key-value data to render in the template. Keys must match template variables.
+	// **Required.** Key-value data to render in the template.
 	Data map[string]interface{} `json:"data"`
-	// Export format: `url` uploads to CDN and returns URL, `binary` returns raw PDF bytes
-	ExportType *AppRoutersV1PdfExportType `json:"export_type,omitempty"`
-	// URL expiration in seconds. Min: 60 (1 min), Max: 604800 (7 days). Only applies to `url` export type.
+	// Export format. Currently only `url` is supported for async.
+	ExportType *AppRoutersV1PdfAsyncExportType `json:"export_type,omitempty"`
+	// URL expiration in seconds (60-604800). Default: 86400 (24 hours).
 	Expiration *int32 `json:"expiration,omitempty"`
 	Filename NullableString `json:"filename,omitempty" validate:"regexp=^[a-zA-Z0-9_\\\\-\\\\.]+$"`
-	// Upload to your configured S3 bucket instead of CDN
+	// Upload to your configured S3 bucket instead of CDN.
 	StoreS3 *bool `json:"store_s3,omitempty"`
 	S3Filepath NullableString `json:"s3_filepath,omitempty" validate:"regexp=^[a-zA-Z0-9_\\\\-\\\\.\\/]+$"`
 	S3Bucket NullableString `json:"s3_bucket,omitempty" validate:"regexp=^[a-z0-9][a-z0-9.\\\\-]*[a-z0-9]$"`
+	WebhookUrl NullableString `json:"webhook_url,omitempty"`
+	WebhookSecret NullableString `json:"webhook_secret,omitempty"`
 }
 
-type _CreatePdfRequest CreatePdfRequest
+type _CreateAsyncPdfRequest CreateAsyncPdfRequest
 
-// NewCreatePdfRequest instantiates a new CreatePdfRequest object
+// NewCreateAsyncPdfRequest instantiates a new CreateAsyncPdfRequest object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreatePdfRequest(templateId string, data map[string]interface{}) *CreatePdfRequest {
-	this := CreatePdfRequest{}
+func NewCreateAsyncPdfRequest(templateId string, data map[string]interface{}) *CreateAsyncPdfRequest {
+	this := CreateAsyncPdfRequest{}
 	this.TemplateId = templateId
 	this.Data = data
-	var exportType AppRoutersV1PdfExportType = URL
+	var exportType AppRoutersV1PdfAsyncExportType = URL
 	this.ExportType = &exportType
 	var expiration int32 = 86400
 	this.Expiration = &expiration
@@ -55,12 +57,12 @@ func NewCreatePdfRequest(templateId string, data map[string]interface{}) *Create
 	return &this
 }
 
-// NewCreatePdfRequestWithDefaults instantiates a new CreatePdfRequest object
+// NewCreateAsyncPdfRequestWithDefaults instantiates a new CreateAsyncPdfRequest object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreatePdfRequestWithDefaults() *CreatePdfRequest {
-	this := CreatePdfRequest{}
-	var exportType AppRoutersV1PdfExportType = URL
+func NewCreateAsyncPdfRequestWithDefaults() *CreateAsyncPdfRequest {
+	this := CreateAsyncPdfRequest{}
+	var exportType AppRoutersV1PdfAsyncExportType = URL
 	this.ExportType = &exportType
 	var expiration int32 = 86400
 	this.Expiration = &expiration
@@ -70,7 +72,7 @@ func NewCreatePdfRequestWithDefaults() *CreatePdfRequest {
 }
 
 // GetTemplateId returns the TemplateId field value
-func (o *CreatePdfRequest) GetTemplateId() string {
+func (o *CreateAsyncPdfRequest) GetTemplateId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -81,7 +83,7 @@ func (o *CreatePdfRequest) GetTemplateId() string {
 
 // GetTemplateIdOk returns a tuple with the TemplateId field value
 // and a boolean to check if the value has been set.
-func (o *CreatePdfRequest) GetTemplateIdOk() (*string, bool) {
+func (o *CreateAsyncPdfRequest) GetTemplateIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -89,12 +91,12 @@ func (o *CreatePdfRequest) GetTemplateIdOk() (*string, bool) {
 }
 
 // SetTemplateId sets field value
-func (o *CreatePdfRequest) SetTemplateId(v string) {
+func (o *CreateAsyncPdfRequest) SetTemplateId(v string) {
 	o.TemplateId = v
 }
 
 // GetData returns the Data field value
-func (o *CreatePdfRequest) GetData() map[string]interface{} {
+func (o *CreateAsyncPdfRequest) GetData() map[string]interface{} {
 	if o == nil {
 		var ret map[string]interface{}
 		return ret
@@ -105,7 +107,7 @@ func (o *CreatePdfRequest) GetData() map[string]interface{} {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *CreatePdfRequest) GetDataOk() (map[string]interface{}, bool) {
+func (o *CreateAsyncPdfRequest) GetDataOk() (map[string]interface{}, bool) {
 	if o == nil {
 		return map[string]interface{}{}, false
 	}
@@ -113,14 +115,14 @@ func (o *CreatePdfRequest) GetDataOk() (map[string]interface{}, bool) {
 }
 
 // SetData sets field value
-func (o *CreatePdfRequest) SetData(v map[string]interface{}) {
+func (o *CreateAsyncPdfRequest) SetData(v map[string]interface{}) {
 	o.Data = v
 }
 
 // GetExportType returns the ExportType field value if set, zero value otherwise.
-func (o *CreatePdfRequest) GetExportType() AppRoutersV1PdfExportType {
+func (o *CreateAsyncPdfRequest) GetExportType() AppRoutersV1PdfAsyncExportType {
 	if o == nil || IsNil(o.ExportType) {
-		var ret AppRoutersV1PdfExportType
+		var ret AppRoutersV1PdfAsyncExportType
 		return ret
 	}
 	return *o.ExportType
@@ -128,7 +130,7 @@ func (o *CreatePdfRequest) GetExportType() AppRoutersV1PdfExportType {
 
 // GetExportTypeOk returns a tuple with the ExportType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreatePdfRequest) GetExportTypeOk() (*AppRoutersV1PdfExportType, bool) {
+func (o *CreateAsyncPdfRequest) GetExportTypeOk() (*AppRoutersV1PdfAsyncExportType, bool) {
 	if o == nil || IsNil(o.ExportType) {
 		return nil, false
 	}
@@ -136,7 +138,7 @@ func (o *CreatePdfRequest) GetExportTypeOk() (*AppRoutersV1PdfExportType, bool) 
 }
 
 // HasExportType returns a boolean if a field has been set.
-func (o *CreatePdfRequest) HasExportType() bool {
+func (o *CreateAsyncPdfRequest) HasExportType() bool {
 	if o != nil && !IsNil(o.ExportType) {
 		return true
 	}
@@ -144,13 +146,13 @@ func (o *CreatePdfRequest) HasExportType() bool {
 	return false
 }
 
-// SetExportType gets a reference to the given AppRoutersV1PdfExportType and assigns it to the ExportType field.
-func (o *CreatePdfRequest) SetExportType(v AppRoutersV1PdfExportType) {
+// SetExportType gets a reference to the given AppRoutersV1PdfAsyncExportType and assigns it to the ExportType field.
+func (o *CreateAsyncPdfRequest) SetExportType(v AppRoutersV1PdfAsyncExportType) {
 	o.ExportType = &v
 }
 
 // GetExpiration returns the Expiration field value if set, zero value otherwise.
-func (o *CreatePdfRequest) GetExpiration() int32 {
+func (o *CreateAsyncPdfRequest) GetExpiration() int32 {
 	if o == nil || IsNil(o.Expiration) {
 		var ret int32
 		return ret
@@ -160,7 +162,7 @@ func (o *CreatePdfRequest) GetExpiration() int32 {
 
 // GetExpirationOk returns a tuple with the Expiration field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreatePdfRequest) GetExpirationOk() (*int32, bool) {
+func (o *CreateAsyncPdfRequest) GetExpirationOk() (*int32, bool) {
 	if o == nil || IsNil(o.Expiration) {
 		return nil, false
 	}
@@ -168,7 +170,7 @@ func (o *CreatePdfRequest) GetExpirationOk() (*int32, bool) {
 }
 
 // HasExpiration returns a boolean if a field has been set.
-func (o *CreatePdfRequest) HasExpiration() bool {
+func (o *CreateAsyncPdfRequest) HasExpiration() bool {
 	if o != nil && !IsNil(o.Expiration) {
 		return true
 	}
@@ -177,12 +179,12 @@ func (o *CreatePdfRequest) HasExpiration() bool {
 }
 
 // SetExpiration gets a reference to the given int32 and assigns it to the Expiration field.
-func (o *CreatePdfRequest) SetExpiration(v int32) {
+func (o *CreateAsyncPdfRequest) SetExpiration(v int32) {
 	o.Expiration = &v
 }
 
 // GetFilename returns the Filename field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CreatePdfRequest) GetFilename() string {
+func (o *CreateAsyncPdfRequest) GetFilename() string {
 	if o == nil || IsNil(o.Filename.Get()) {
 		var ret string
 		return ret
@@ -193,7 +195,7 @@ func (o *CreatePdfRequest) GetFilename() string {
 // GetFilenameOk returns a tuple with the Filename field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreatePdfRequest) GetFilenameOk() (*string, bool) {
+func (o *CreateAsyncPdfRequest) GetFilenameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -201,7 +203,7 @@ func (o *CreatePdfRequest) GetFilenameOk() (*string, bool) {
 }
 
 // HasFilename returns a boolean if a field has been set.
-func (o *CreatePdfRequest) HasFilename() bool {
+func (o *CreateAsyncPdfRequest) HasFilename() bool {
 	if o != nil && o.Filename.IsSet() {
 		return true
 	}
@@ -210,21 +212,21 @@ func (o *CreatePdfRequest) HasFilename() bool {
 }
 
 // SetFilename gets a reference to the given NullableString and assigns it to the Filename field.
-func (o *CreatePdfRequest) SetFilename(v string) {
+func (o *CreateAsyncPdfRequest) SetFilename(v string) {
 	o.Filename.Set(&v)
 }
 // SetFilenameNil sets the value for Filename to be an explicit nil
-func (o *CreatePdfRequest) SetFilenameNil() {
+func (o *CreateAsyncPdfRequest) SetFilenameNil() {
 	o.Filename.Set(nil)
 }
 
 // UnsetFilename ensures that no value is present for Filename, not even an explicit nil
-func (o *CreatePdfRequest) UnsetFilename() {
+func (o *CreateAsyncPdfRequest) UnsetFilename() {
 	o.Filename.Unset()
 }
 
 // GetStoreS3 returns the StoreS3 field value if set, zero value otherwise.
-func (o *CreatePdfRequest) GetStoreS3() bool {
+func (o *CreateAsyncPdfRequest) GetStoreS3() bool {
 	if o == nil || IsNil(o.StoreS3) {
 		var ret bool
 		return ret
@@ -234,7 +236,7 @@ func (o *CreatePdfRequest) GetStoreS3() bool {
 
 // GetStoreS3Ok returns a tuple with the StoreS3 field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreatePdfRequest) GetStoreS3Ok() (*bool, bool) {
+func (o *CreateAsyncPdfRequest) GetStoreS3Ok() (*bool, bool) {
 	if o == nil || IsNil(o.StoreS3) {
 		return nil, false
 	}
@@ -242,7 +244,7 @@ func (o *CreatePdfRequest) GetStoreS3Ok() (*bool, bool) {
 }
 
 // HasStoreS3 returns a boolean if a field has been set.
-func (o *CreatePdfRequest) HasStoreS3() bool {
+func (o *CreateAsyncPdfRequest) HasStoreS3() bool {
 	if o != nil && !IsNil(o.StoreS3) {
 		return true
 	}
@@ -251,12 +253,12 @@ func (o *CreatePdfRequest) HasStoreS3() bool {
 }
 
 // SetStoreS3 gets a reference to the given bool and assigns it to the StoreS3 field.
-func (o *CreatePdfRequest) SetStoreS3(v bool) {
+func (o *CreateAsyncPdfRequest) SetStoreS3(v bool) {
 	o.StoreS3 = &v
 }
 
 // GetS3Filepath returns the S3Filepath field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CreatePdfRequest) GetS3Filepath() string {
+func (o *CreateAsyncPdfRequest) GetS3Filepath() string {
 	if o == nil || IsNil(o.S3Filepath.Get()) {
 		var ret string
 		return ret
@@ -267,7 +269,7 @@ func (o *CreatePdfRequest) GetS3Filepath() string {
 // GetS3FilepathOk returns a tuple with the S3Filepath field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreatePdfRequest) GetS3FilepathOk() (*string, bool) {
+func (o *CreateAsyncPdfRequest) GetS3FilepathOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -275,7 +277,7 @@ func (o *CreatePdfRequest) GetS3FilepathOk() (*string, bool) {
 }
 
 // HasS3Filepath returns a boolean if a field has been set.
-func (o *CreatePdfRequest) HasS3Filepath() bool {
+func (o *CreateAsyncPdfRequest) HasS3Filepath() bool {
 	if o != nil && o.S3Filepath.IsSet() {
 		return true
 	}
@@ -284,21 +286,21 @@ func (o *CreatePdfRequest) HasS3Filepath() bool {
 }
 
 // SetS3Filepath gets a reference to the given NullableString and assigns it to the S3Filepath field.
-func (o *CreatePdfRequest) SetS3Filepath(v string) {
+func (o *CreateAsyncPdfRequest) SetS3Filepath(v string) {
 	o.S3Filepath.Set(&v)
 }
 // SetS3FilepathNil sets the value for S3Filepath to be an explicit nil
-func (o *CreatePdfRequest) SetS3FilepathNil() {
+func (o *CreateAsyncPdfRequest) SetS3FilepathNil() {
 	o.S3Filepath.Set(nil)
 }
 
 // UnsetS3Filepath ensures that no value is present for S3Filepath, not even an explicit nil
-func (o *CreatePdfRequest) UnsetS3Filepath() {
+func (o *CreateAsyncPdfRequest) UnsetS3Filepath() {
 	o.S3Filepath.Unset()
 }
 
 // GetS3Bucket returns the S3Bucket field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *CreatePdfRequest) GetS3Bucket() string {
+func (o *CreateAsyncPdfRequest) GetS3Bucket() string {
 	if o == nil || IsNil(o.S3Bucket.Get()) {
 		var ret string
 		return ret
@@ -309,7 +311,7 @@ func (o *CreatePdfRequest) GetS3Bucket() string {
 // GetS3BucketOk returns a tuple with the S3Bucket field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *CreatePdfRequest) GetS3BucketOk() (*string, bool) {
+func (o *CreateAsyncPdfRequest) GetS3BucketOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -317,7 +319,7 @@ func (o *CreatePdfRequest) GetS3BucketOk() (*string, bool) {
 }
 
 // HasS3Bucket returns a boolean if a field has been set.
-func (o *CreatePdfRequest) HasS3Bucket() bool {
+func (o *CreateAsyncPdfRequest) HasS3Bucket() bool {
 	if o != nil && o.S3Bucket.IsSet() {
 		return true
 	}
@@ -326,20 +328,104 @@ func (o *CreatePdfRequest) HasS3Bucket() bool {
 }
 
 // SetS3Bucket gets a reference to the given NullableString and assigns it to the S3Bucket field.
-func (o *CreatePdfRequest) SetS3Bucket(v string) {
+func (o *CreateAsyncPdfRequest) SetS3Bucket(v string) {
 	o.S3Bucket.Set(&v)
 }
 // SetS3BucketNil sets the value for S3Bucket to be an explicit nil
-func (o *CreatePdfRequest) SetS3BucketNil() {
+func (o *CreateAsyncPdfRequest) SetS3BucketNil() {
 	o.S3Bucket.Set(nil)
 }
 
 // UnsetS3Bucket ensures that no value is present for S3Bucket, not even an explicit nil
-func (o *CreatePdfRequest) UnsetS3Bucket() {
+func (o *CreateAsyncPdfRequest) UnsetS3Bucket() {
 	o.S3Bucket.Unset()
 }
 
-func (o CreatePdfRequest) MarshalJSON() ([]byte, error) {
+// GetWebhookUrl returns the WebhookUrl field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *CreateAsyncPdfRequest) GetWebhookUrl() string {
+	if o == nil || IsNil(o.WebhookUrl.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.WebhookUrl.Get()
+}
+
+// GetWebhookUrlOk returns a tuple with the WebhookUrl field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateAsyncPdfRequest) GetWebhookUrlOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.WebhookUrl.Get(), o.WebhookUrl.IsSet()
+}
+
+// HasWebhookUrl returns a boolean if a field has been set.
+func (o *CreateAsyncPdfRequest) HasWebhookUrl() bool {
+	if o != nil && o.WebhookUrl.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetWebhookUrl gets a reference to the given NullableString and assigns it to the WebhookUrl field.
+func (o *CreateAsyncPdfRequest) SetWebhookUrl(v string) {
+	o.WebhookUrl.Set(&v)
+}
+// SetWebhookUrlNil sets the value for WebhookUrl to be an explicit nil
+func (o *CreateAsyncPdfRequest) SetWebhookUrlNil() {
+	o.WebhookUrl.Set(nil)
+}
+
+// UnsetWebhookUrl ensures that no value is present for WebhookUrl, not even an explicit nil
+func (o *CreateAsyncPdfRequest) UnsetWebhookUrl() {
+	o.WebhookUrl.Unset()
+}
+
+// GetWebhookSecret returns the WebhookSecret field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *CreateAsyncPdfRequest) GetWebhookSecret() string {
+	if o == nil || IsNil(o.WebhookSecret.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.WebhookSecret.Get()
+}
+
+// GetWebhookSecretOk returns a tuple with the WebhookSecret field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateAsyncPdfRequest) GetWebhookSecretOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.WebhookSecret.Get(), o.WebhookSecret.IsSet()
+}
+
+// HasWebhookSecret returns a boolean if a field has been set.
+func (o *CreateAsyncPdfRequest) HasWebhookSecret() bool {
+	if o != nil && o.WebhookSecret.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetWebhookSecret gets a reference to the given NullableString and assigns it to the WebhookSecret field.
+func (o *CreateAsyncPdfRequest) SetWebhookSecret(v string) {
+	o.WebhookSecret.Set(&v)
+}
+// SetWebhookSecretNil sets the value for WebhookSecret to be an explicit nil
+func (o *CreateAsyncPdfRequest) SetWebhookSecretNil() {
+	o.WebhookSecret.Set(nil)
+}
+
+// UnsetWebhookSecret ensures that no value is present for WebhookSecret, not even an explicit nil
+func (o *CreateAsyncPdfRequest) UnsetWebhookSecret() {
+	o.WebhookSecret.Unset()
+}
+
+func (o CreateAsyncPdfRequest) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -347,7 +433,7 @@ func (o CreatePdfRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreatePdfRequest) ToMap() (map[string]interface{}, error) {
+func (o CreateAsyncPdfRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["template_id"] = o.TemplateId
 	toSerialize["data"] = o.Data
@@ -369,10 +455,16 @@ func (o CreatePdfRequest) ToMap() (map[string]interface{}, error) {
 	if o.S3Bucket.IsSet() {
 		toSerialize["s3_bucket"] = o.S3Bucket.Get()
 	}
+	if o.WebhookUrl.IsSet() {
+		toSerialize["webhook_url"] = o.WebhookUrl.Get()
+	}
+	if o.WebhookSecret.IsSet() {
+		toSerialize["webhook_secret"] = o.WebhookSecret.Get()
+	}
 	return toSerialize, nil
 }
 
-func (o *CreatePdfRequest) UnmarshalJSON(data []byte) (err error) {
+func (o *CreateAsyncPdfRequest) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -395,53 +487,53 @@ func (o *CreatePdfRequest) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varCreatePdfRequest := _CreatePdfRequest{}
+	varCreateAsyncPdfRequest := _CreateAsyncPdfRequest{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCreatePdfRequest)
+	err = decoder.Decode(&varCreateAsyncPdfRequest)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CreatePdfRequest(varCreatePdfRequest)
+	*o = CreateAsyncPdfRequest(varCreateAsyncPdfRequest)
 
 	return err
 }
 
-type NullableCreatePdfRequest struct {
-	value *CreatePdfRequest
+type NullableCreateAsyncPdfRequest struct {
+	value *CreateAsyncPdfRequest
 	isSet bool
 }
 
-func (v NullableCreatePdfRequest) Get() *CreatePdfRequest {
+func (v NullableCreateAsyncPdfRequest) Get() *CreateAsyncPdfRequest {
 	return v.value
 }
 
-func (v *NullableCreatePdfRequest) Set(val *CreatePdfRequest) {
+func (v *NullableCreateAsyncPdfRequest) Set(val *CreateAsyncPdfRequest) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreatePdfRequest) IsSet() bool {
+func (v NullableCreateAsyncPdfRequest) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreatePdfRequest) Unset() {
+func (v *NullableCreateAsyncPdfRequest) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreatePdfRequest(val *CreatePdfRequest) *NullableCreatePdfRequest {
-	return &NullableCreatePdfRequest{value: val, isSet: true}
+func NewNullableCreateAsyncPdfRequest(val *CreateAsyncPdfRequest) *NullableCreateAsyncPdfRequest {
+	return &NullableCreateAsyncPdfRequest{value: val, isSet: true}
 }
 
-func (v NullableCreatePdfRequest) MarshalJSON() ([]byte, error) {
+func (v NullableCreateAsyncPdfRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreatePdfRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableCreateAsyncPdfRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
