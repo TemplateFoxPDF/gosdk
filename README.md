@@ -1,6 +1,6 @@
 # TemplateFox Go SDK
 
-Official Go SDK for [TemplateFox](https://pdftemplateapi.com) - Generate PDFs from HTML templates via API.
+Official Go SDK for [TemplateFox](https://templatefox.com) - Generate PDFs from HTML templates via API.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/TemplateFoxPDF/gosdk.svg)](https://pkg.go.dev/github.com/TemplateFoxPDF/gosdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -135,7 +135,7 @@ fmt.Printf("Connection: %s\n", test.Message)
 ```go
 config := templatefox.NewConfiguration()
 config.Servers = templatefox.ServerConfigurations{
-    {URL: "https://api.pdftemplateapi.com"},
+    {URL: "https://api.templatefox.com"},
 }
 config.AddDefaultHeader("x-api-key", os.Getenv("TEMPLATEFOX_API_KEY"))
 
@@ -168,13 +168,13 @@ if err != nil {
 
 ## Documentation
 
-- [API Documentation](https://pdftemplateapi.com/docs)
-- [Swagger UI](https://api.pdftemplateapi.com/docs)
-- [Dashboard](https://pdftemplateapi.com/dashboard)
+- [API Documentation](https://templatefox.com/docs)
+- [Swagger UI](https://api.templatefox.com/docs)
+- [Dashboard](https://templatefox.com/dashboard)
 
 ## Support
 
-- Email: support@pdftemplateapi.com
+- Email: support@templatefox.com
 - Issues: [GitHub Issues](https://github.com/TemplateFoxPDF/gosdk/issues)
 
 ## License

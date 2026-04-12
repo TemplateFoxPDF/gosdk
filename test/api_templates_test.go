@@ -22,6 +22,35 @@ func Test_templatefox_TemplatesAPIService(t *testing.T) {
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
+	t.Run("Test TemplatesAPIService CreateTemplateVersion", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateId string
+
+		resp, httpRes, err := apiClient.TemplatesAPI.CreateTemplateVersion(context.Background(), templateId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test TemplatesAPIService DeleteTemplateVersion", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateId string
+		var versionNumber int32
+
+		resp, httpRes, err := apiClient.TemplatesAPI.DeleteTemplateVersion(context.Background(), templateId, versionNumber).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test TemplatesAPIService GetTemplateFields", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
@@ -36,11 +65,68 @@ func Test_templatefox_TemplatesAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test TemplatesAPIService ListTemplateVersions", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateId string
+
+		resp, httpRes, err := apiClient.TemplatesAPI.ListTemplateVersions(context.Background(), templateId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test TemplatesAPIService ListTemplates", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.TemplatesAPI.ListTemplates(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test TemplatesAPIService RemoveDefaultVersion", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateId string
+
+		resp, httpRes, err := apiClient.TemplatesAPI.RemoveDefaultVersion(context.Background(), templateId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test TemplatesAPIService SetDefaultVersion", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateId string
+
+		resp, httpRes, err := apiClient.TemplatesAPI.SetDefaultVersion(context.Background(), templateId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test TemplatesAPIService UpdateTemplateVersion", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateId string
+		var versionNumber int32
+
+		resp, httpRes, err := apiClient.TemplatesAPI.UpdateTemplateVersion(context.Background(), templateId, versionNumber).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
