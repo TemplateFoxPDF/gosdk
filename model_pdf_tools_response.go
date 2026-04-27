@@ -16,14 +16,14 @@ import (
 	"fmt"
 )
 
-// checks if the CreatePdfResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreatePdfResponse{}
+// checks if the PdfToolsResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PdfToolsResponse{}
 
-// CreatePdfResponse Response for URL export type
-type CreatePdfResponse struct {
-	// Signed URL to download the PDF (expires after specified time)
+// PdfToolsResponse struct for PdfToolsResponse
+type PdfToolsResponse struct {
+	// Signed URL to download the PDF
 	Url string `json:"url"`
-	// Filename of the generated PDF
+	// Filename of the resulting PDF
 	Filename string `json:"filename"`
 	// Remaining credits after this request
 	CreditsRemaining int32 `json:"credits_remaining"`
@@ -31,14 +31,14 @@ type CreatePdfResponse struct {
 	ExpiresIn int32 `json:"expires_in"`
 }
 
-type _CreatePdfResponse CreatePdfResponse
+type _PdfToolsResponse PdfToolsResponse
 
-// NewCreatePdfResponse instantiates a new CreatePdfResponse object
+// NewPdfToolsResponse instantiates a new PdfToolsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreatePdfResponse(url string, filename string, creditsRemaining int32, expiresIn int32) *CreatePdfResponse {
-	this := CreatePdfResponse{}
+func NewPdfToolsResponse(url string, filename string, creditsRemaining int32, expiresIn int32) *PdfToolsResponse {
+	this := PdfToolsResponse{}
 	this.Url = url
 	this.Filename = filename
 	this.CreditsRemaining = creditsRemaining
@@ -46,16 +46,16 @@ func NewCreatePdfResponse(url string, filename string, creditsRemaining int32, e
 	return &this
 }
 
-// NewCreatePdfResponseWithDefaults instantiates a new CreatePdfResponse object
+// NewPdfToolsResponseWithDefaults instantiates a new PdfToolsResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreatePdfResponseWithDefaults() *CreatePdfResponse {
-	this := CreatePdfResponse{}
+func NewPdfToolsResponseWithDefaults() *PdfToolsResponse {
+	this := PdfToolsResponse{}
 	return &this
 }
 
 // GetUrl returns the Url field value
-func (o *CreatePdfResponse) GetUrl() string {
+func (o *PdfToolsResponse) GetUrl() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -66,7 +66,7 @@ func (o *CreatePdfResponse) GetUrl() string {
 
 // GetUrlOk returns a tuple with the Url field value
 // and a boolean to check if the value has been set.
-func (o *CreatePdfResponse) GetUrlOk() (*string, bool) {
+func (o *PdfToolsResponse) GetUrlOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -74,12 +74,12 @@ func (o *CreatePdfResponse) GetUrlOk() (*string, bool) {
 }
 
 // SetUrl sets field value
-func (o *CreatePdfResponse) SetUrl(v string) {
+func (o *PdfToolsResponse) SetUrl(v string) {
 	o.Url = v
 }
 
 // GetFilename returns the Filename field value
-func (o *CreatePdfResponse) GetFilename() string {
+func (o *PdfToolsResponse) GetFilename() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -90,7 +90,7 @@ func (o *CreatePdfResponse) GetFilename() string {
 
 // GetFilenameOk returns a tuple with the Filename field value
 // and a boolean to check if the value has been set.
-func (o *CreatePdfResponse) GetFilenameOk() (*string, bool) {
+func (o *PdfToolsResponse) GetFilenameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -98,12 +98,12 @@ func (o *CreatePdfResponse) GetFilenameOk() (*string, bool) {
 }
 
 // SetFilename sets field value
-func (o *CreatePdfResponse) SetFilename(v string) {
+func (o *PdfToolsResponse) SetFilename(v string) {
 	o.Filename = v
 }
 
 // GetCreditsRemaining returns the CreditsRemaining field value
-func (o *CreatePdfResponse) GetCreditsRemaining() int32 {
+func (o *PdfToolsResponse) GetCreditsRemaining() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -114,7 +114,7 @@ func (o *CreatePdfResponse) GetCreditsRemaining() int32 {
 
 // GetCreditsRemainingOk returns a tuple with the CreditsRemaining field value
 // and a boolean to check if the value has been set.
-func (o *CreatePdfResponse) GetCreditsRemainingOk() (*int32, bool) {
+func (o *PdfToolsResponse) GetCreditsRemainingOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -122,12 +122,12 @@ func (o *CreatePdfResponse) GetCreditsRemainingOk() (*int32, bool) {
 }
 
 // SetCreditsRemaining sets field value
-func (o *CreatePdfResponse) SetCreditsRemaining(v int32) {
+func (o *PdfToolsResponse) SetCreditsRemaining(v int32) {
 	o.CreditsRemaining = v
 }
 
 // GetExpiresIn returns the ExpiresIn field value
-func (o *CreatePdfResponse) GetExpiresIn() int32 {
+func (o *PdfToolsResponse) GetExpiresIn() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -138,7 +138,7 @@ func (o *CreatePdfResponse) GetExpiresIn() int32 {
 
 // GetExpiresInOk returns a tuple with the ExpiresIn field value
 // and a boolean to check if the value has been set.
-func (o *CreatePdfResponse) GetExpiresInOk() (*int32, bool) {
+func (o *PdfToolsResponse) GetExpiresInOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -146,11 +146,11 @@ func (o *CreatePdfResponse) GetExpiresInOk() (*int32, bool) {
 }
 
 // SetExpiresIn sets field value
-func (o *CreatePdfResponse) SetExpiresIn(v int32) {
+func (o *PdfToolsResponse) SetExpiresIn(v int32) {
 	o.ExpiresIn = v
 }
 
-func (o CreatePdfResponse) MarshalJSON() ([]byte, error) {
+func (o PdfToolsResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -158,7 +158,7 @@ func (o CreatePdfResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreatePdfResponse) ToMap() (map[string]interface{}, error) {
+func (o PdfToolsResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["url"] = o.Url
 	toSerialize["filename"] = o.Filename
@@ -167,7 +167,7 @@ func (o CreatePdfResponse) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *CreatePdfResponse) UnmarshalJSON(data []byte) (err error) {
+func (o *PdfToolsResponse) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -192,53 +192,53 @@ func (o *CreatePdfResponse) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varCreatePdfResponse := _CreatePdfResponse{}
+	varPdfToolsResponse := _PdfToolsResponse{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCreatePdfResponse)
+	err = decoder.Decode(&varPdfToolsResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CreatePdfResponse(varCreatePdfResponse)
+	*o = PdfToolsResponse(varPdfToolsResponse)
 
 	return err
 }
 
-type NullableCreatePdfResponse struct {
-	value *CreatePdfResponse
+type NullablePdfToolsResponse struct {
+	value *PdfToolsResponse
 	isSet bool
 }
 
-func (v NullableCreatePdfResponse) Get() *CreatePdfResponse {
+func (v NullablePdfToolsResponse) Get() *PdfToolsResponse {
 	return v.value
 }
 
-func (v *NullableCreatePdfResponse) Set(val *CreatePdfResponse) {
+func (v *NullablePdfToolsResponse) Set(val *PdfToolsResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreatePdfResponse) IsSet() bool {
+func (v NullablePdfToolsResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreatePdfResponse) Unset() {
+func (v *NullablePdfToolsResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreatePdfResponse(val *CreatePdfResponse) *NullableCreatePdfResponse {
-	return &NullableCreatePdfResponse{value: val, isSet: true}
+func NewNullablePdfToolsResponse(val *PdfToolsResponse) *NullablePdfToolsResponse {
+	return &NullablePdfToolsResponse{value: val, isSet: true}
 }
 
-func (v NullableCreatePdfResponse) MarshalJSON() ([]byte, error) {
+func (v NullablePdfToolsResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreatePdfResponse) UnmarshalJSON(src []byte) error {
+func (v *NullablePdfToolsResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
