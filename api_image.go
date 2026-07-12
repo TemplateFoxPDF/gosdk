@@ -19,12 +19,12 @@ import (
 )
 
 
-type PDFAPI interface {
+type ImageAPI interface {
 
 	/*
-	CreatePdf Generate PDF from template
+	CreateImage Generate image from template
 
-	Generate a PDF from a saved template with dynamic data.
+	Generate an image (PNG, JPEG or WebP) from an image template.
 
 **Authentication:** API Key required (`x-api-key` header)
 
@@ -33,50 +33,69 @@ type PDFAPI interface {
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `template_id` | string | ✅ Yes | Template short ID (12 characters) |
-| `data` | object | ✅ Yes | Key-value data to render in template |
+| `modifications` | array | No | Modify elements by layer name (see below) |
+| `format` | string | No | `png` (default), `jpeg` or `webp` |
+| `width` | integer | No | Output width in pixels (defaults to the template's native width) |
 | `export_type` | string | No | `url` (default) or `binary` |
-| `expiration` | integer | No | URL expiration in seconds (60-604800, default: 86400) |
+
+## Modifications
+
+Each modification targets a layer by the `name` you set in the editor's Layers panel:
+
+| Property | Description |
+|----------|-------------|
+| `name` | Layer name to modify (required) |
+| `text` | Replace the layer's text |
+| `image_url` | Set the layer's image (`src` for images, `background-image` otherwise) |
+| `color` | Text color |
+| `background` | Background color |
+| `hidden` | Hide (`true`) or show (`false`) the layer |
+
+Unknown layer names are skipped and listed in the response `warnings`. A name that
+matches several layers is applied to all of them.
 
 ## Export Types
-- `url` (default): PDF is uploaded to CDN, returns JSON with URL
-- `binary`: Returns raw PDF bytes directly
+- `url` (default): image is uploaded to CDN, returns JSON with URL
+- `binary`: returns raw image bytes directly
+
+**Note:** This endpoint only accepts image templates. Use `/v1/pdf/create` for PDF templates.
 
 **Credits:** 1 credit deducted per successful generation.
 
 **Rate Limits:** 60 requests/min (free), 120 requests/min (paid). Headers included in response.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return PDFAPICreatePdfRequest
+	@return ImageAPICreateImageRequest
 	*/
-	CreatePdf(ctx context.Context) PDFAPICreatePdfRequest
+	CreateImage(ctx context.Context) ImageAPICreateImageRequest
 
-	// CreatePdfExecute executes the request
-	//  @return CreatePdfResponse
-	CreatePdfExecute(r PDFAPICreatePdfRequest) (*CreatePdfResponse, *http.Response, error)
+	// CreateImageExecute executes the request
+	//  @return CreateImageResponse
+	CreateImageExecute(r ImageAPICreateImageRequest) (*CreateImageResponse, *http.Response, error)
 }
 
-// PDFAPIService PDFAPI service
-type PDFAPIService service
+// ImageAPIService ImageAPI service
+type ImageAPIService service
 
-type PDFAPICreatePdfRequest struct {
+type ImageAPICreateImageRequest struct {
 	ctx context.Context
-	ApiService PDFAPI
-	createPdfRequest *CreatePdfRequest
+	ApiService ImageAPI
+	createImageRequest *CreateImageRequest
 }
 
-func (r PDFAPICreatePdfRequest) CreatePdfRequest(createPdfRequest CreatePdfRequest) PDFAPICreatePdfRequest {
-	r.createPdfRequest = &createPdfRequest
+func (r ImageAPICreateImageRequest) CreateImageRequest(createImageRequest CreateImageRequest) ImageAPICreateImageRequest {
+	r.createImageRequest = &createImageRequest
 	return r
 }
 
-func (r PDFAPICreatePdfRequest) Execute() (*CreatePdfResponse, *http.Response, error) {
-	return r.ApiService.CreatePdfExecute(r)
+func (r ImageAPICreateImageRequest) Execute() (*CreateImageResponse, *http.Response, error) {
+	return r.ApiService.CreateImageExecute(r)
 }
 
 /*
-CreatePdf Generate PDF from template
+CreateImage Generate image from template
 
-Generate a PDF from a saved template with dynamic data.
+Generate an image (PNG, JPEG or WebP) from an image template.
 
 **Authentication:** API Key required (`x-api-key` header)
 
@@ -85,50 +104,69 @@ Generate a PDF from a saved template with dynamic data.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `template_id` | string | ✅ Yes | Template short ID (12 characters) |
-| `data` | object | ✅ Yes | Key-value data to render in template |
+| `modifications` | array | No | Modify elements by layer name (see below) |
+| `format` | string | No | `png` (default), `jpeg` or `webp` |
+| `width` | integer | No | Output width in pixels (defaults to the template's native width) |
 | `export_type` | string | No | `url` (default) or `binary` |
-| `expiration` | integer | No | URL expiration in seconds (60-604800, default: 86400) |
+
+## Modifications
+
+Each modification targets a layer by the `name` you set in the editor's Layers panel:
+
+| Property | Description |
+|----------|-------------|
+| `name` | Layer name to modify (required) |
+| `text` | Replace the layer's text |
+| `image_url` | Set the layer's image (`src` for images, `background-image` otherwise) |
+| `color` | Text color |
+| `background` | Background color |
+| `hidden` | Hide (`true`) or show (`false`) the layer |
+
+Unknown layer names are skipped and listed in the response `warnings`. A name that
+matches several layers is applied to all of them.
 
 ## Export Types
-- `url` (default): PDF is uploaded to CDN, returns JSON with URL
-- `binary`: Returns raw PDF bytes directly
+- `url` (default): image is uploaded to CDN, returns JSON with URL
+- `binary`: returns raw image bytes directly
+
+**Note:** This endpoint only accepts image templates. Use `/v1/pdf/create` for PDF templates.
 
 **Credits:** 1 credit deducted per successful generation.
 
 **Rate Limits:** 60 requests/min (free), 120 requests/min (paid). Headers included in response.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return PDFAPICreatePdfRequest
+ @return ImageAPICreateImageRequest
 */
-func (a *PDFAPIService) CreatePdf(ctx context.Context) PDFAPICreatePdfRequest {
-	return PDFAPICreatePdfRequest{
+func (a *ImageAPIService) CreateImage(ctx context.Context) ImageAPICreateImageRequest {
+	return ImageAPICreateImageRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreatePdfResponse
-func (a *PDFAPIService) CreatePdfExecute(r PDFAPICreatePdfRequest) (*CreatePdfResponse, *http.Response, error) {
+//  @return CreateImageResponse
+func (a *ImageAPIService) CreateImageExecute(r ImageAPICreateImageRequest) (*CreateImageResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreatePdfResponse
+		localVarReturnValue  *CreateImageResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PDFAPIService.CreatePdf")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ImageAPIService.CreateImage")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1/pdf/create"
+	localVarPath := localBasePath + "/v1/image/create"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.createPdfRequest == nil {
-		return localVarReturnValue, nil, reportError("createPdfRequest is required and must be specified")
+	if r.createImageRequest == nil {
+		return localVarReturnValue, nil, reportError("createImageRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -141,7 +179,7 @@ func (a *PDFAPIService) CreatePdfExecute(r PDFAPICreatePdfRequest) (*CreatePdfRe
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "application/pdf"}
+	localVarHTTPHeaderAccepts := []string{"application/json", "image/png"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -149,7 +187,7 @@ func (a *PDFAPIService) CreatePdfExecute(r PDFAPICreatePdfRequest) (*CreatePdfRe
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.createPdfRequest
+	localVarPostBody = r.createImageRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
