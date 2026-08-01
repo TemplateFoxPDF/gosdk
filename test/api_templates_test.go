@@ -65,6 +65,20 @@ func Test_templatefox_TemplatesAPIService(t *testing.T) {
 
 	})
 
+	t.Run("Test TemplatesAPIService GetTemplateLayers", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var templateId string
+
+		resp, httpRes, err := apiClient.TemplatesAPI.GetTemplateLayers(context.Background(), templateId).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test TemplatesAPIService ListTemplateVersions", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
