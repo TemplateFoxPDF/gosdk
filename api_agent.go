@@ -20,63 +20,47 @@ import (
 )
 
 
-type PDFAsyncAPI interface {
+type AgentAPI interface {
 
 	/*
-	CreatePdfAsync Generate PDF asynchronously
+	CreateAgentTemplate Create a template with the authoring agent
 
-	Queue a PDF generation job for async processing.
+	Describe the image template you want; the TemplateFox agent authors it for you —
+valid HTML that renders deterministically AND stays editable in the visual editor,
+with every layer named and drivable through `/v1/image/create` modifications.
+
+The job is asynchronous: poll `GET /v1/agent/jobs/{job_id}`. When completed, the
+response always includes a **preview_url** (rendered PNG) plus the `template_id`.
+Iterate with `POST /v1/agent/templates/{template_id}/revise`.
 
 **Authentication:** API Key required (`x-api-key` header)
 
-## How It Works
+## Credits
 
-1. Submit a job with template and data
-2. Receive a `job_id` immediately
-3. Poll `/v1/pdf/status/{job_id}` for completion
-4. Optionally receive a webhook notification
+Creation costs **25 credits**, deducted when the job is
+queued and fully refunded if the job fails.
 
-## When to Use Async
+## Canvas
 
-Use async generation when:
-- Processing large documents or batches
-- You can't wait for synchronous response
-- You want webhook notifications
+Pass a `preset` (instagram-square, instagram-story, og-image, twitter-card, pinterest-pin, square-512) or explicit `width` + `height` in px.
 
-## Webhooks
+## Rate Limits
 
-If `webhook_url` is provided, we'll POST to it when the job completes or fails:
-
-```json
-{
-    "event": "pdf.completed",
-    "job_id": "...",
-    "status": "completed",
-    "result": {
-        "url": "https://...",
-        "filename": "invoice.pdf"
-    }
-}
-```
-
-Webhooks include HMAC-SHA256 signature in `X-TemplateFox-Signature` header
-if you provide a `webhook_secret`.
-
-**Credits:** 1 credit deducted immediately (refunded if job fails permanently).
+Standard rate limits apply (60 req/min free, 120 req/min paid).
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return PDFAsyncAPICreatePdfAsyncRequest
+	@return AgentAPICreateAgentTemplateRequest
 	*/
-	CreatePdfAsync(ctx context.Context) PDFAsyncAPICreatePdfAsyncRequest
+	CreateAgentTemplate(ctx context.Context) AgentAPICreateAgentTemplateRequest
 
-	// CreatePdfAsyncExecute executes the request
-	//  @return CreateAsyncPdfResponse
-	CreatePdfAsyncExecute(r PDFAsyncAPICreatePdfAsyncRequest) (*CreateAsyncPdfResponse, *http.Response, error)
+	// CreateAgentTemplateExecute executes the request
+	//  @return AgentJobCreatedResponse
+	CreateAgentTemplateExecute(r AgentAPICreateAgentTemplateRequest) (*AgentJobCreatedResponse, *http.Response, error)
 
 	/*
-	GetPdfJob Get PDF job status
+	GetAgentJob Get authoring-agent job status
 
-	Get the current status of an async PDF generation job.
+	Poll the status of an authoring-agent job.
 
 **Authentication:** API Key required (`x-api-key` header)
 
@@ -84,138 +68,126 @@ if you provide a `webhook_secret`.
 
 | Status | Description |
 |--------|-------------|
-| `pending` | Job is queued, waiting to be processed |
-| `processing` | Job is being processed |
-| `completed` | PDF generated successfully |
-| `failed` | Job failed (check error_message) |
+| `pending` | Job is queued |
+| `processing` | The agent is authoring (typically 30s-3min) |
+| `completed` | Done — `template_id` and `preview_url` are set |
+| `failed` | Job failed (see error_message); credits were refunded |
 
-## Polling Recommendations
-
-- Poll every 1-2 seconds for small documents
-- Poll every 5-10 seconds for large documents
-- Consider using webhooks instead of polling
+Poll every 2-5 seconds. A job stuck in `processing` for more than 10 minutes is
+failed automatically and its credits refunded.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param jobId Async job ID (UUID returned by the create-async endpoint)
-	@return PDFAsyncAPIGetPdfJobRequest
+	@param jobId Job UUID
+	@return AgentAPIGetAgentJobRequest
 	*/
-	GetPdfJob(ctx context.Context, jobId string) PDFAsyncAPIGetPdfJobRequest
+	GetAgentJob(ctx context.Context, jobId string) AgentAPIGetAgentJobRequest
 
-	// GetPdfJobExecute executes the request
-	//  @return JobStatusResponse
-	GetPdfJobExecute(r PDFAsyncAPIGetPdfJobRequest) (*JobStatusResponse, *http.Response, error)
+	// GetAgentJobExecute executes the request
+	//  @return AgentJobStatusResponse
+	GetAgentJobExecute(r AgentAPIGetAgentJobRequest) (*AgentJobStatusResponse, *http.Response, error)
 
 	/*
-	ListPdfJobs List PDF jobs
+	ReviseAgentTemplate Revise a template with the authoring agent
 
-	List async PDF generation jobs for your team.
+	Send natural-language feedback on an existing image template; the agent revises
+the draft while keeping layer names stable. Asynchronous — poll
+`GET /v1/agent/jobs/{job_id}`; the completed job always includes a fresh
+**preview_url**.
 
 **Authentication:** API Key required (`x-api-key` header)
 
-Supports pagination and filtering by status.
+## Credits
+
+A revision costs **10 credits**, deducted when the job
+is queued and fully refunded if the job fails.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return PDFAsyncAPIListPdfJobsRequest
+	@param templateId Template short ID (12 characters)
+	@return AgentAPIReviseAgentTemplateRequest
 	*/
-	ListPdfJobs(ctx context.Context) PDFAsyncAPIListPdfJobsRequest
+	ReviseAgentTemplate(ctx context.Context, templateId string) AgentAPIReviseAgentTemplateRequest
 
-	// ListPdfJobsExecute executes the request
-	//  @return JobListResponse
-	ListPdfJobsExecute(r PDFAsyncAPIListPdfJobsRequest) (*JobListResponse, *http.Response, error)
+	// ReviseAgentTemplateExecute executes the request
+	//  @return AgentJobCreatedResponse
+	ReviseAgentTemplateExecute(r AgentAPIReviseAgentTemplateRequest) (*AgentJobCreatedResponse, *http.Response, error)
 }
 
-// PDFAsyncAPIService PDFAsyncAPI service
-type PDFAsyncAPIService service
+// AgentAPIService AgentAPI service
+type AgentAPIService service
 
-type PDFAsyncAPICreatePdfAsyncRequest struct {
+type AgentAPICreateAgentTemplateRequest struct {
 	ctx context.Context
-	ApiService PDFAsyncAPI
-	createAsyncPdfRequest *CreateAsyncPdfRequest
+	ApiService AgentAPI
+	createAgentTemplateRequest *CreateAgentTemplateRequest
 }
 
-func (r PDFAsyncAPICreatePdfAsyncRequest) CreateAsyncPdfRequest(createAsyncPdfRequest CreateAsyncPdfRequest) PDFAsyncAPICreatePdfAsyncRequest {
-	r.createAsyncPdfRequest = &createAsyncPdfRequest
+func (r AgentAPICreateAgentTemplateRequest) CreateAgentTemplateRequest(createAgentTemplateRequest CreateAgentTemplateRequest) AgentAPICreateAgentTemplateRequest {
+	r.createAgentTemplateRequest = &createAgentTemplateRequest
 	return r
 }
 
-func (r PDFAsyncAPICreatePdfAsyncRequest) Execute() (*CreateAsyncPdfResponse, *http.Response, error) {
-	return r.ApiService.CreatePdfAsyncExecute(r)
+func (r AgentAPICreateAgentTemplateRequest) Execute() (*AgentJobCreatedResponse, *http.Response, error) {
+	return r.ApiService.CreateAgentTemplateExecute(r)
 }
 
 /*
-CreatePdfAsync Generate PDF asynchronously
+CreateAgentTemplate Create a template with the authoring agent
 
-Queue a PDF generation job for async processing.
+Describe the image template you want; the TemplateFox agent authors it for you —
+valid HTML that renders deterministically AND stays editable in the visual editor,
+with every layer named and drivable through `/v1/image/create` modifications.
+
+The job is asynchronous: poll `GET /v1/agent/jobs/{job_id}`. When completed, the
+response always includes a **preview_url** (rendered PNG) plus the `template_id`.
+Iterate with `POST /v1/agent/templates/{template_id}/revise`.
 
 **Authentication:** API Key required (`x-api-key` header)
 
-## How It Works
+## Credits
 
-1. Submit a job with template and data
-2. Receive a `job_id` immediately
-3. Poll `/v1/pdf/status/{job_id}` for completion
-4. Optionally receive a webhook notification
+Creation costs **25 credits**, deducted when the job is
+queued and fully refunded if the job fails.
 
-## When to Use Async
+## Canvas
 
-Use async generation when:
-- Processing large documents or batches
-- You can't wait for synchronous response
-- You want webhook notifications
+Pass a `preset` (instagram-square, instagram-story, og-image, twitter-card, pinterest-pin, square-512) or explicit `width` + `height` in px.
 
-## Webhooks
+## Rate Limits
 
-If `webhook_url` is provided, we'll POST to it when the job completes or fails:
-
-```json
-{
-    "event": "pdf.completed",
-    "job_id": "...",
-    "status": "completed",
-    "result": {
-        "url": "https://...",
-        "filename": "invoice.pdf"
-    }
-}
-```
-
-Webhooks include HMAC-SHA256 signature in `X-TemplateFox-Signature` header
-if you provide a `webhook_secret`.
-
-**Credits:** 1 credit deducted immediately (refunded if job fails permanently).
+Standard rate limits apply (60 req/min free, 120 req/min paid).
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return PDFAsyncAPICreatePdfAsyncRequest
+ @return AgentAPICreateAgentTemplateRequest
 */
-func (a *PDFAsyncAPIService) CreatePdfAsync(ctx context.Context) PDFAsyncAPICreatePdfAsyncRequest {
-	return PDFAsyncAPICreatePdfAsyncRequest{
+func (a *AgentAPIService) CreateAgentTemplate(ctx context.Context) AgentAPICreateAgentTemplateRequest {
+	return AgentAPICreateAgentTemplateRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return CreateAsyncPdfResponse
-func (a *PDFAsyncAPIService) CreatePdfAsyncExecute(r PDFAsyncAPICreatePdfAsyncRequest) (*CreateAsyncPdfResponse, *http.Response, error) {
+//  @return AgentJobCreatedResponse
+func (a *AgentAPIService) CreateAgentTemplateExecute(r AgentAPICreateAgentTemplateRequest) (*AgentJobCreatedResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *CreateAsyncPdfResponse
+		localVarReturnValue  *AgentJobCreatedResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PDFAsyncAPIService.CreatePdfAsync")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AgentAPIService.CreateAgentTemplate")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1/pdf/create-async"
+	localVarPath := localBasePath + "/v1/agent/templates"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.createAsyncPdfRequest == nil {
-		return localVarReturnValue, nil, reportError("createAsyncPdfRequest is required and must be specified")
+	if r.createAgentTemplateRequest == nil {
+		return localVarReturnValue, nil, reportError("createAgentTemplateRequest is required and must be specified")
 	}
 
 	// to determine the Content-Type header
@@ -236,7 +208,7 @@ func (a *PDFAsyncAPIService) CreatePdfAsyncExecute(r PDFAsyncAPICreatePdfAsyncRe
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.createAsyncPdfRequest
+	localVarPostBody = r.createAgentTemplateRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
@@ -273,16 +245,6 @@ func (a *PDFAsyncAPIService) CreatePdfAsyncExecute(r PDFAsyncAPICreatePdfAsyncRe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 422 {
-			var v HTTPValidationError
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -298,20 +260,20 @@ func (a *PDFAsyncAPIService) CreatePdfAsyncExecute(r PDFAsyncAPICreatePdfAsyncRe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type PDFAsyncAPIGetPdfJobRequest struct {
+type AgentAPIGetAgentJobRequest struct {
 	ctx context.Context
-	ApiService PDFAsyncAPI
+	ApiService AgentAPI
 	jobId string
 }
 
-func (r PDFAsyncAPIGetPdfJobRequest) Execute() (*JobStatusResponse, *http.Response, error) {
-	return r.ApiService.GetPdfJobExecute(r)
+func (r AgentAPIGetAgentJobRequest) Execute() (*AgentJobStatusResponse, *http.Response, error) {
+	return r.ApiService.GetAgentJobExecute(r)
 }
 
 /*
-GetPdfJob Get PDF job status
+GetAgentJob Get authoring-agent job status
 
-Get the current status of an async PDF generation job.
+Poll the status of an authoring-agent job.
 
 **Authentication:** API Key required (`x-api-key` header)
 
@@ -319,23 +281,20 @@ Get the current status of an async PDF generation job.
 
 | Status | Description |
 |--------|-------------|
-| `pending` | Job is queued, waiting to be processed |
-| `processing` | Job is being processed |
-| `completed` | PDF generated successfully |
-| `failed` | Job failed (check error_message) |
+| `pending` | Job is queued |
+| `processing` | The agent is authoring (typically 30s-3min) |
+| `completed` | Done — `template_id` and `preview_url` are set |
+| `failed` | Job failed (see error_message); credits were refunded |
 
-## Polling Recommendations
-
-- Poll every 1-2 seconds for small documents
-- Poll every 5-10 seconds for large documents
-- Consider using webhooks instead of polling
+Poll every 2-5 seconds. A job stuck in `processing` for more than 10 minutes is
+failed automatically and its credits refunded.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param jobId Async job ID (UUID returned by the create-async endpoint)
- @return PDFAsyncAPIGetPdfJobRequest
+ @param jobId Job UUID
+ @return AgentAPIGetAgentJobRequest
 */
-func (a *PDFAsyncAPIService) GetPdfJob(ctx context.Context, jobId string) PDFAsyncAPIGetPdfJobRequest {
-	return PDFAsyncAPIGetPdfJobRequest{
+func (a *AgentAPIService) GetAgentJob(ctx context.Context, jobId string) AgentAPIGetAgentJobRequest {
+	return AgentAPIGetAgentJobRequest{
 		ApiService: a,
 		ctx: ctx,
 		jobId: jobId,
@@ -343,21 +302,21 @@ func (a *PDFAsyncAPIService) GetPdfJob(ctx context.Context, jobId string) PDFAsy
 }
 
 // Execute executes the request
-//  @return JobStatusResponse
-func (a *PDFAsyncAPIService) GetPdfJobExecute(r PDFAsyncAPIGetPdfJobRequest) (*JobStatusResponse, *http.Response, error) {
+//  @return AgentJobStatusResponse
+func (a *AgentAPIService) GetAgentJobExecute(r AgentAPIGetAgentJobRequest) (*AgentJobStatusResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *JobStatusResponse
+		localVarReturnValue  *AgentJobStatusResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PDFAsyncAPIService.GetPdfJob")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AgentAPIService.GetAgentJob")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1/pdf/jobs/{job_id}"
+	localVarPath := localBasePath + "/v1/agent/jobs/{job_id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"job_id"+"}", url.PathEscape(parameterValueToString(r.jobId, "jobId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -442,95 +401,76 @@ func (a *PDFAsyncAPIService) GetPdfJobExecute(r PDFAsyncAPIGetPdfJobRequest) (*J
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type PDFAsyncAPIListPdfJobsRequest struct {
+type AgentAPIReviseAgentTemplateRequest struct {
 	ctx context.Context
-	ApiService PDFAsyncAPI
-	limit *int32
-	offset *int32
-	status *AppRoutersV1PdfAsyncJobStatus
+	ApiService AgentAPI
+	templateId string
+	reviseAgentTemplateRequest *ReviseAgentTemplateRequest
 }
 
-// Maximum number of results to return
-func (r PDFAsyncAPIListPdfJobsRequest) Limit(limit int32) PDFAsyncAPIListPdfJobsRequest {
-	r.limit = &limit
+func (r AgentAPIReviseAgentTemplateRequest) ReviseAgentTemplateRequest(reviseAgentTemplateRequest ReviseAgentTemplateRequest) AgentAPIReviseAgentTemplateRequest {
+	r.reviseAgentTemplateRequest = &reviseAgentTemplateRequest
 	return r
 }
 
-// Number of results to skip (for pagination)
-func (r PDFAsyncAPIListPdfJobsRequest) Offset(offset int32) PDFAsyncAPIListPdfJobsRequest {
-	r.offset = &offset
-	return r
-}
-
-// Filter jobs by status
-func (r PDFAsyncAPIListPdfJobsRequest) Status(status AppRoutersV1PdfAsyncJobStatus) PDFAsyncAPIListPdfJobsRequest {
-	r.status = &status
-	return r
-}
-
-func (r PDFAsyncAPIListPdfJobsRequest) Execute() (*JobListResponse, *http.Response, error) {
-	return r.ApiService.ListPdfJobsExecute(r)
+func (r AgentAPIReviseAgentTemplateRequest) Execute() (*AgentJobCreatedResponse, *http.Response, error) {
+	return r.ApiService.ReviseAgentTemplateExecute(r)
 }
 
 /*
-ListPdfJobs List PDF jobs
+ReviseAgentTemplate Revise a template with the authoring agent
 
-List async PDF generation jobs for your team.
+Send natural-language feedback on an existing image template; the agent revises
+the draft while keeping layer names stable. Asynchronous — poll
+`GET /v1/agent/jobs/{job_id}`; the completed job always includes a fresh
+**preview_url**.
 
 **Authentication:** API Key required (`x-api-key` header)
 
-Supports pagination and filtering by status.
+## Credits
+
+A revision costs **10 credits**, deducted when the job
+is queued and fully refunded if the job fails.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return PDFAsyncAPIListPdfJobsRequest
+ @param templateId Template short ID (12 characters)
+ @return AgentAPIReviseAgentTemplateRequest
 */
-func (a *PDFAsyncAPIService) ListPdfJobs(ctx context.Context) PDFAsyncAPIListPdfJobsRequest {
-	return PDFAsyncAPIListPdfJobsRequest{
+func (a *AgentAPIService) ReviseAgentTemplate(ctx context.Context, templateId string) AgentAPIReviseAgentTemplateRequest {
+	return AgentAPIReviseAgentTemplateRequest{
 		ApiService: a,
 		ctx: ctx,
+		templateId: templateId,
 	}
 }
 
 // Execute executes the request
-//  @return JobListResponse
-func (a *PDFAsyncAPIService) ListPdfJobsExecute(r PDFAsyncAPIListPdfJobsRequest) (*JobListResponse, *http.Response, error) {
+//  @return AgentJobCreatedResponse
+func (a *AgentAPIService) ReviseAgentTemplateExecute(r AgentAPIReviseAgentTemplateRequest) (*AgentJobCreatedResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
+		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *JobListResponse
+		localVarReturnValue  *AgentJobCreatedResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PDFAsyncAPIService.ListPdfJobs")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AgentAPIService.ReviseAgentTemplate")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1/pdf/jobs"
+	localVarPath := localBasePath + "/v1/agent/templates/{template_id}/revise"
+	localVarPath = strings.Replace(localVarPath, "{"+"template_id"+"}", url.PathEscape(parameterValueToString(r.templateId, "templateId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.reviseAgentTemplateRequest == nil {
+		return localVarReturnValue, nil, reportError("reviseAgentTemplateRequest is required and must be specified")
+	}
 
-	if r.limit != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", r.limit, "form", "")
-	} else {
-		var defaultValue int32 = 20
-		parameterAddToHeaderOrQuery(localVarQueryParams, "limit", defaultValue, "form", "")
-		r.limit = &defaultValue
-	}
-	if r.offset != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", r.offset, "form", "")
-	} else {
-		var defaultValue int32 = 0
-		parameterAddToHeaderOrQuery(localVarQueryParams, "offset", defaultValue, "form", "")
-		r.offset = &defaultValue
-	}
-	if r.status != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "status", r.status, "form", "")
-	}
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -546,6 +486,8 @@ func (a *PDFAsyncAPIService) ListPdfJobsExecute(r PDFAsyncAPIListPdfJobsRequest)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	// body params
+	localVarPostBody = r.reviseAgentTemplateRequest
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

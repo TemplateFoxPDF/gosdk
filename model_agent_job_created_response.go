@@ -16,43 +16,42 @@ import (
 	"fmt"
 )
 
-// checks if the CreateAsyncPdfResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CreateAsyncPdfResponse{}
+// checks if the AgentJobCreatedResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AgentJobCreatedResponse{}
 
-// CreateAsyncPdfResponse Response for async PDF creation
-type CreateAsyncPdfResponse struct {
-	// Unique job identifier for status polling
+// AgentJobCreatedResponse struct for AgentJobCreatedResponse
+type AgentJobCreatedResponse struct {
 	JobId string `json:"job_id"`
-	// Initial job status (always 'pending')
-	Status AppRoutersV1PdfAsyncJobStatus `json:"status"`
-	// Remaining credits after this request
+	Status string `json:"status"`
+	CreditsCharged int32 `json:"credits_charged"`
 	CreditsRemaining int32 `json:"credits_remaining"`
 }
 
-type _CreateAsyncPdfResponse CreateAsyncPdfResponse
+type _AgentJobCreatedResponse AgentJobCreatedResponse
 
-// NewCreateAsyncPdfResponse instantiates a new CreateAsyncPdfResponse object
+// NewAgentJobCreatedResponse instantiates a new AgentJobCreatedResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreateAsyncPdfResponse(jobId string, status AppRoutersV1PdfAsyncJobStatus, creditsRemaining int32) *CreateAsyncPdfResponse {
-	this := CreateAsyncPdfResponse{}
+func NewAgentJobCreatedResponse(jobId string, status string, creditsCharged int32, creditsRemaining int32) *AgentJobCreatedResponse {
+	this := AgentJobCreatedResponse{}
 	this.JobId = jobId
 	this.Status = status
+	this.CreditsCharged = creditsCharged
 	this.CreditsRemaining = creditsRemaining
 	return &this
 }
 
-// NewCreateAsyncPdfResponseWithDefaults instantiates a new CreateAsyncPdfResponse object
+// NewAgentJobCreatedResponseWithDefaults instantiates a new AgentJobCreatedResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCreateAsyncPdfResponseWithDefaults() *CreateAsyncPdfResponse {
-	this := CreateAsyncPdfResponse{}
+func NewAgentJobCreatedResponseWithDefaults() *AgentJobCreatedResponse {
+	this := AgentJobCreatedResponse{}
 	return &this
 }
 
 // GetJobId returns the JobId field value
-func (o *CreateAsyncPdfResponse) GetJobId() string {
+func (o *AgentJobCreatedResponse) GetJobId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -63,7 +62,7 @@ func (o *CreateAsyncPdfResponse) GetJobId() string {
 
 // GetJobIdOk returns a tuple with the JobId field value
 // and a boolean to check if the value has been set.
-func (o *CreateAsyncPdfResponse) GetJobIdOk() (*string, bool) {
+func (o *AgentJobCreatedResponse) GetJobIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -71,14 +70,14 @@ func (o *CreateAsyncPdfResponse) GetJobIdOk() (*string, bool) {
 }
 
 // SetJobId sets field value
-func (o *CreateAsyncPdfResponse) SetJobId(v string) {
+func (o *AgentJobCreatedResponse) SetJobId(v string) {
 	o.JobId = v
 }
 
 // GetStatus returns the Status field value
-func (o *CreateAsyncPdfResponse) GetStatus() AppRoutersV1PdfAsyncJobStatus {
+func (o *AgentJobCreatedResponse) GetStatus() string {
 	if o == nil {
-		var ret AppRoutersV1PdfAsyncJobStatus
+		var ret string
 		return ret
 	}
 
@@ -87,7 +86,7 @@ func (o *CreateAsyncPdfResponse) GetStatus() AppRoutersV1PdfAsyncJobStatus {
 
 // GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
-func (o *CreateAsyncPdfResponse) GetStatusOk() (*AppRoutersV1PdfAsyncJobStatus, bool) {
+func (o *AgentJobCreatedResponse) GetStatusOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -95,12 +94,36 @@ func (o *CreateAsyncPdfResponse) GetStatusOk() (*AppRoutersV1PdfAsyncJobStatus, 
 }
 
 // SetStatus sets field value
-func (o *CreateAsyncPdfResponse) SetStatus(v AppRoutersV1PdfAsyncJobStatus) {
+func (o *AgentJobCreatedResponse) SetStatus(v string) {
 	o.Status = v
 }
 
+// GetCreditsCharged returns the CreditsCharged field value
+func (o *AgentJobCreatedResponse) GetCreditsCharged() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.CreditsCharged
+}
+
+// GetCreditsChargedOk returns a tuple with the CreditsCharged field value
+// and a boolean to check if the value has been set.
+func (o *AgentJobCreatedResponse) GetCreditsChargedOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.CreditsCharged, true
+}
+
+// SetCreditsCharged sets field value
+func (o *AgentJobCreatedResponse) SetCreditsCharged(v int32) {
+	o.CreditsCharged = v
+}
+
 // GetCreditsRemaining returns the CreditsRemaining field value
-func (o *CreateAsyncPdfResponse) GetCreditsRemaining() int32 {
+func (o *AgentJobCreatedResponse) GetCreditsRemaining() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -111,7 +134,7 @@ func (o *CreateAsyncPdfResponse) GetCreditsRemaining() int32 {
 
 // GetCreditsRemainingOk returns a tuple with the CreditsRemaining field value
 // and a boolean to check if the value has been set.
-func (o *CreateAsyncPdfResponse) GetCreditsRemainingOk() (*int32, bool) {
+func (o *AgentJobCreatedResponse) GetCreditsRemainingOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -119,11 +142,11 @@ func (o *CreateAsyncPdfResponse) GetCreditsRemainingOk() (*int32, bool) {
 }
 
 // SetCreditsRemaining sets field value
-func (o *CreateAsyncPdfResponse) SetCreditsRemaining(v int32) {
+func (o *AgentJobCreatedResponse) SetCreditsRemaining(v int32) {
 	o.CreditsRemaining = v
 }
 
-func (o CreateAsyncPdfResponse) MarshalJSON() ([]byte, error) {
+func (o AgentJobCreatedResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -131,21 +154,23 @@ func (o CreateAsyncPdfResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateAsyncPdfResponse) ToMap() (map[string]interface{}, error) {
+func (o AgentJobCreatedResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["job_id"] = o.JobId
 	toSerialize["status"] = o.Status
+	toSerialize["credits_charged"] = o.CreditsCharged
 	toSerialize["credits_remaining"] = o.CreditsRemaining
 	return toSerialize, nil
 }
 
-func (o *CreateAsyncPdfResponse) UnmarshalJSON(data []byte) (err error) {
+func (o *AgentJobCreatedResponse) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"job_id",
 		"status",
+		"credits_charged",
 		"credits_remaining",
 	}
 
@@ -163,53 +188,53 @@ func (o *CreateAsyncPdfResponse) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varCreateAsyncPdfResponse := _CreateAsyncPdfResponse{}
+	varAgentJobCreatedResponse := _AgentJobCreatedResponse{}
 
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCreateAsyncPdfResponse)
+	err = decoder.Decode(&varAgentJobCreatedResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CreateAsyncPdfResponse(varCreateAsyncPdfResponse)
+	*o = AgentJobCreatedResponse(varAgentJobCreatedResponse)
 
 	return err
 }
 
-type NullableCreateAsyncPdfResponse struct {
-	value *CreateAsyncPdfResponse
+type NullableAgentJobCreatedResponse struct {
+	value *AgentJobCreatedResponse
 	isSet bool
 }
 
-func (v NullableCreateAsyncPdfResponse) Get() *CreateAsyncPdfResponse {
+func (v NullableAgentJobCreatedResponse) Get() *AgentJobCreatedResponse {
 	return v.value
 }
 
-func (v *NullableCreateAsyncPdfResponse) Set(val *CreateAsyncPdfResponse) {
+func (v *NullableAgentJobCreatedResponse) Set(val *AgentJobCreatedResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCreateAsyncPdfResponse) IsSet() bool {
+func (v NullableAgentJobCreatedResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCreateAsyncPdfResponse) Unset() {
+func (v *NullableAgentJobCreatedResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCreateAsyncPdfResponse(val *CreateAsyncPdfResponse) *NullableCreateAsyncPdfResponse {
-	return &NullableCreateAsyncPdfResponse{value: val, isSet: true}
+func NewNullableAgentJobCreatedResponse(val *AgentJobCreatedResponse) *NullableAgentJobCreatedResponse {
+	return &NullableAgentJobCreatedResponse{value: val, isSet: true}
 }
 
-func (v NullableCreateAsyncPdfResponse) MarshalJSON() ([]byte, error) {
+func (v NullableAgentJobCreatedResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCreateAsyncPdfResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableAgentJobCreatedResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
